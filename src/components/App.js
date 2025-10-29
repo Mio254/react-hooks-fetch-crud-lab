@@ -22,19 +22,17 @@ function App() {
 
   // Handle deleting a question
   function handleDeleteQuestion(deletedQuestion) {
-    const updatedQuestions = questions.filter(
-      (q) => q.id !== deletedQuestion.id
-    );
-    setQuestions(updatedQuestions);
+    setQuestions(questions.filter((q) => q.id !== deletedQuestion.id));
   }
 
   // Handle updating a question’s correct answer
   function handleUpdateQuestion(updatedQuestion) {
-    const updatedQuestions = questions.map((q) =>
-      q.id === updatedQuestion.id ? updatedQuestion : q
-    );
-    setQuestions(updatedQuestions);
-  }
+  const updatedQuestions = questions.map((question) =>
+    question.id === updatedQuestion.id ? updatedQuestion : question
+  );
+  setQuestions(updatedQuestions);
+}
+
 
   return (
     <main className="App">

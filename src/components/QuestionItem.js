@@ -1,39 +1,44 @@
 import React from "react";
 
-function QuestionItem({ item, onUpdateItem, onDeleteItem }) {
-  function handleAnswerChange(e) {
-    const updatedQuestion = { ...item, correctIndex: parseInt(e.target.value) };
+function QuestionItem({ item, onDeleteItem, onUpdateItem }) {
+  if (!item) return null;
+
+  function handleChange(e) {
+    const updatedIndex = parseInt(e.target.value, 10);
 
     fetch(`http://localhost:4000/questions/${item.id}`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(updatedQuestion),
+      body: JSON.stringify({ correctIndex: updatedIndex }),
     })
       .then((r) => r.json())
-      .then((data) => onUpdateItem(data));
+      .then((updatedItem) => onUpdateItem(updatedItem))
+      .catch((err) => console.error("Update failed:", err));
   }
 
   function handleDeleteClick() {
     fetch(`http://localhost:4000/questions/${item.id}`, {
       method: "DELETE",
     })
-      .then((r) => r.json())
-      .then(() => onDeleteItem(item));
+      .then(() => onDeleteItem(item))
+      .catch((err) => console.error("Delete failed:", err));
   }
-
-  const answerOptions = item.answers.map((a, index) => (
-    <option key={index} value={index}>
-      {a}
-    </option>
-  ));
 
   return (
     <li>
-      <h4>{item.prompt}</h4>
+      <h3>{item.prompt}</h3>
       <label>
         Correct Answer:
-        <select value={item.correctIndex} onChange={handleAnswerChange}>
-          {answerOptions}
+        <select
+          aria-label="Correct Answer"
+          value={item.correctIndex}
+          onChange={handleChange}
+        >
+          {item.answers?.map((ans, index) => (
+            <option key={index} value={index}>
+              {ans}
+            </option>
+          ))}
         </select>
       </label>
       <button onClick={handleDeleteClick}>Delete Question</button>
