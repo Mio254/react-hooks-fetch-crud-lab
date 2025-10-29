@@ -11,9 +11,52 @@ import { server } from "../mocks/server";
 
 import App from "../components/App";
 
+
+
+beforeEach(() => {
+  global.fetch = jest.fn((url, options) => {
+    if (options && options.method === "POST") {
+      return Promise.resolve({
+        ok: true,
+        json: () =>
+          Promise.resolve({
+            id: 3,
+            prompt: "Test Prompt",
+            answers: ["A", "B", "C"],
+            correctIndex: 0,
+          }),
+      });
+    }
+
+    // For GET requests
+    return Promise.resolve({
+      ok: true,
+      json: () =>
+        Promise.resolve([
+          {
+            id: 1,
+            prompt: "lorem testum 1",
+            answers: ["A", "B", "C"],
+            correctIndex: 0,
+          },
+          {
+            id: 2,
+            prompt: "lorem testum 2",
+            answers: ["X", "Y", "Z"],
+            correctIndex: 1,
+          },
+        ]),
+    });
+  });
+});
+
 beforeAll(() => server.listen());
 afterEach(() => server.resetHandlers());
 afterAll(() => server.close());
+
+afterEach(() => {
+  jest.restoreAllMocks();
+});
 
 test("displays question prompts after fetching", async () => {
   render(<App />);
